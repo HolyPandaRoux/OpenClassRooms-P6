@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 // schéma of a sauce
 const sauceSchema = mongoose.Schema({
@@ -15,4 +15,4 @@ const sauceSchema = mongoose.Schema({
     usersDisliked: { type: [String] },
 });
 
-module.exports = mongoose.model("Sauce", sauceSchema);
+module.exports = mongoose.model('Sauce', sauceSchema);

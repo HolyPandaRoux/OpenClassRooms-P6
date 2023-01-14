@@ -1,6 +1,6 @@
 /* This is importing the Sauce model and the fs module. */
-const Sauce = require("../models/Sauce");
-const fs = require("fs");
+const Sauce = require('../models/Sauce');
+const fs = require('fs');
 
 
 /* This is a function that is used to create a sauce in the database. */
@@ -13,12 +13,12 @@ exports.createSauce = (req, res, next) => {
         dislikes: 0,
         usersDisliked: [],
         usersLiked: [],
-        imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename
             }`,
     });
     sauce
         .save()
-        .then(() => res.status(201).json({ message: "Sauce enregistré !" }))
+        .then(() => res.status(201).json({ message: 'Sauce enregistré !' }))
         .catch((error) => res.status(400).json({ error }));
 };
 
@@ -40,12 +40,12 @@ exports.getOneSauce = (req, res, next) => {
 /* This is a function that is used to modify a sauce in the database. */
 exports.modifySauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id }).then((sauce) => {
-        const filename = sauce.imageUrl.split("/images/")[1];
+        const filename = sauce.imageUrl.split('/images/')[1];
         fs.unlink(`images/${filename}`, () => {
             const sauceObject = req.file
                 ? {
                     ...JSON.parse(req.body.sauce),
-                    imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename
+                    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename
                         }`,
                 }
                 : { ...req.body };
@@ -53,7 +53,7 @@ exports.modifySauce = (req, res, next) => {
                 { _id: req.params.id },
                 { ...sauceObject, _id: req.params.id }
             )
-                .then(() => res.status(200).json({ message: "Sauce modifiée !" }))
+                .then(() => res.status(200).json({ message: 'Sauce modifiée !' }))
                 .catch((error) => res.status(400).json({ error }));
         });
     });
@@ -63,10 +63,10 @@ exports.modifySauce = (req, res, next) => {
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then((sauce) => {
-            const filename = sauce.imageUrl.split("/images/")[1];
+            const filename = sauce.imageUrl.split('/images/')[1];
             fs.unlink(`images/${filename}`, () => {
                 Sauce.deleteOne({ _id: req.params.id })
-                    .then(() => res.status(200).json({ message: "Sauce supprimé !" }))
+                    .then(() => res.status(200).json({ message: 'Sauce supprimé !' }))
                     .catch((error) => res.status(400).json({ error }));
             });
         })
@@ -100,7 +100,7 @@ exports.likeSauce = (req, res, next) => {
                 $push: { usersLiked: userId },
             }
         )
-            .then((sauce) => res.status(200).json({ message: "Sauce appréciée" }))
+            .then((sauce) => res.status(200).json({ message: 'Sauce appréciée' }))
             .catch((error) => res.status(500).json({ error }));
     }
 
@@ -114,7 +114,7 @@ exports.likeSauce = (req, res, next) => {
                 $push: { usersDisliked: userId },
             }
         )
-            .then((sauce) => res.status(200).json({ message: "Sauce dépréciée" }))
+            .then((sauce) => res.status(200).json({ message: 'Sauce dépréciée' }))
             .catch((error) => res.status(500).json({ error }));
     }
 
@@ -128,7 +128,7 @@ exports.likeSauce = (req, res, next) => {
                         { $pull: { usersLiked: userId }, $inc: { likes: -1 } }
                     )
                         .then((sauce) => {
-                            res.status(200).json({ message: "Sauce dépréciée" });
+                            res.status(200).json({ message: 'Sauce dépréciée' });
                         })
                         .catch((error) => res.status(500).json({ error }));
                 } 
@@ -141,7 +141,7 @@ exports.likeSauce = (req, res, next) => {
                         }
                     )
                         .then((sauce) => {
-                            res.status(200).json({ message: "Sauce appréciée" });
+                            res.status(200).json({ message: 'Sauce appréciée' });
                         })
                         .catch((error) => res.status(500).json({ error }));
                 }

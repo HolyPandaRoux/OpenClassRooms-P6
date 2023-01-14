@@ -1,4 +1,4 @@
-var passwordValidator = require("password-validator");
+var passwordValidator = require('password-validator');
 
 // Create a schema
 var passwordSchema = new passwordValidator();
@@ -20,6 +20,6 @@ passwordSchema
     .spaces() // Should not have spaces
     .is()
     .not()
-    .oneOf(["Passw0rd", "Password123"]); // Blacklist these values
+    .oneOf(['Passw0rd', 'Password123']); // Blacklist these values
 
 module.exports = passwordSchema;
