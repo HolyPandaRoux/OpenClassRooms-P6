@@ -1,20 +1,25 @@
-//securité pour verifier le TOKEN
+
+const express = require('express');
+const dotenv = require('dotenv').config();
 const jsonwebtoken = require('jsonwebtoken');
+const router = express.Router();
 
 module.exports = (req, res, next) => {
     try {   
-        const token = req.headers.authorization.split(' ')[1]; //on trouve le numero du token par son emplacement 
-        const decodedToken = jsonwebtoken.verify(token, `${process.env.TOP_SECRET}`);
-        const userId = decodedToken.userId;//on en fait un objet JS pour récupérer l'Id qui est dedans
+        const token = req.headers.authorization.split(' ')[1];
+        const decodedToken =jsonwebtoken.verify(token, env.token);
+        const userId = decodedToken.userId;
     
         if (req.body.userId && req.body.userId !== userId) {  //on verifie userId avec celui de la requete
-          throw "Identitée de l'utilisateur non enregistrée";
+          throw "Idendifiant invalide";
         } else {
           next();
         }
     } catch {
-        res.status(401).json({
-            error: new Error('requête non authentifiée!')
-        });
+        res.status(401).json(new Error('requête refusée')
+      );
     }
 };
+
+
+module.exports = router

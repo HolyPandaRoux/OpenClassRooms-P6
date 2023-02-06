@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-
+const express = require('express');
+const router = express.Router();
 //modele de sauce
 const sauceSchema = mongoose.Schema({ 
     userId: {
@@ -62,3 +63,4 @@ const sauceSchema = mongoose.Schema({
 
 
 module.exports = mongoose.model('Sauce', sauceSchema);
+module.exports = router

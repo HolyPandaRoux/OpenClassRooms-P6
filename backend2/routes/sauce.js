@@ -1,17 +1,21 @@
 const express = require('express');
 const router = express.Router();
 
-const sauceControllers = require('../middleware/sauce');
+const sauce            = require('../middleware/sauce');
 const auth             = require('../middleware/auth');
 const multer           = require('../middleware/multer-config');
 
-router.post  ('/sauces' , auth, );
-router.post  ('/sauces' , auth, );
-router.post  ('/'        , auth, multer, sauceControllers.createSauce); // authentification placée en 1er 
-router.put   ('/:id'     , auth, multer, sauceControllers.modifySauce);
-router.delete('/:id'     , auth, sauceControllers.deleteSauce);
-router.get   ('/:id'     , auth, sauceControllers.getOneSauce);
-router.get   ('/'        , auth, sauceControllers.getAllSauces);
-router.post  ('/:id/like', auth, sauceControllers.likeSauce);
+const saucesControllers = require('../controllers/sauce');
 
-module.exports = router; // export du router
+router.get   ('/:id'     , auth, saucesControllers.getOneSauce);
+router.get   ('/'        , auth, saucesControllers.getAllSauces);
+
+router.post  ('/sauces'  , auth, multer, saucesControllers.createSauce);
+router.put   ('/:id'     , auth, multer, saucesControllers.modifySauce);
+
+router.delete('/:id'     , auth, saucesControllers.deleteSauce);
+
+router.post  ('/:id/like', auth, sauce.likeSauce);
+
+
+module.exports = router;

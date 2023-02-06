@@ -1,5 +1,18 @@
-const Sauce = require('../models/Sauce');
+const Sauce      = require('../models/Sauce');
 const firesystem = require('fs');
+
+
+exports.getOneSauce = (req, res, next) => {
+    Sauce.findOne({ _id: req.params.id })
+        .then(sauce => res.status(200).json(sauce))
+        .catch(error => res.status(404).json({ error }));
+};
+
+exports.getAllSauces = (req, res, next) => { 
+    Sauce.find()
+        .then(sauce => res.status(200).json(sauce))
+        .catch(error => res.status(400).json({ error }));
+};
 
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
@@ -50,19 +63,8 @@ exports.deleteSauce = (req, res, next) => {
         .catch(error => res.status(500).json({ error }));
 };
 
-exports.getOneSauce = (req, res, next) => {
-    Sauce.findOne({ _id: req.params.id })
-        .then(sauce => res.status(200).json(sauce))
-        .catch(error => res.status(404).json({ error }));
-};
 
-exports.getAllSauces = (req, res, next) => { 
-    Sauce.find()
-        .then(sauce => res.status(200).json(sauce))
-        .catch(error => res.status(400).json({ error }));
-};
-
-exports.likeSauce = (req, res, next) => {
+exports.likeSauce   = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
             switch (req.body.like) {
@@ -91,3 +93,5 @@ exports.likeSauce = (req, res, next) => {
                 .catch(error => res.status(400).json({ error }));
         })
 }
+
+

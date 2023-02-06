@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const jsonwebtoken = require('jsonwebtoken'); 
 const maskData = require('maskdata'); 
 const passwordValidator = require('password-validator');
+const express = require('express');
+const router = express.Router();
 
 
 let schema = new passwordValidator();
@@ -70,3 +72,6 @@ exports.login = (req, res, next) => {
         })
         .catch(error => res.status(500).json({ error }));
 };
+
+
+module.exports = router

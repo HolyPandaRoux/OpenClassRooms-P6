@@ -1,24 +1,24 @@
+const express = require('express');
 const multer = require('multer');
+const router = express.Router();
 
-//extensions possibles des fichiers images
 const MIME_TYPES = {
   'image/jpg': 'jpg',
   'image/jpeg': 'jpg',
   'image/png': 'png'
 };
 
-const maxSize = 2  //1MB
+const maxSize = 4 * 1024 * 1024; 
 
-//creation d un objet de configuration 
-const storage = multer.diskStorage({ //methode qui enregistre sur le disque 
-    destination: (req, file, callback) => { //emplacement où enregistrer fichier
+const storage = multer.diskStorage({ 
+    destination: (req, file, callback) => { 
         callback(null, 'images');
     },
-    filename: (req, file, callback) => { //creation du nouveau nom de fichier d image pour multer
-        const name = file.originalname.split(' ').join('_'); //on enleve les espaces
+    filename: (req, file, callback) => { 
+        const name = file.originalname.split(' ').join('_'); 
         const extension = MIME_TYPES[file.mimetype];
-        callback(null, name + Date.now() + '.' + extension);//nom de fichier suffisamment unique
-  },
+        callback(null, name + Date.now() + '.' + extension);
+    },
 })
 
 module.exports = multer({
@@ -27,3 +27,5 @@ module.exports = multer({
         fileSize: maxSize 
     }
 }).single('image');
+
+module.exports = router

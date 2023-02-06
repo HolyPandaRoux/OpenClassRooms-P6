@@ -6,7 +6,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodedemon app.js"
-    
   },
   "author": "Diego JULIA",
   "license": "MIT",
@@ -15,6 +14,7 @@
     "bcrypt": "^5.1.0",
     "crypto-js": "^4.1.1",
     "ddos": "^0.2.1",
+    "ddos-express": "^0.1.7",
     "dotenv": "^16.0.3",
     "email-validator": "^2.0.4",
     "express": "^4.18.2",
