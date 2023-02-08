@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const express = require('express');
-const router = express.Router();
 //modele de sauce
 const sauceSchema = mongoose.Schema({ 
     userId: {
@@ -10,8 +8,8 @@ const sauceSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
-        minlength: [5, "pas moins de 5 caratères"],
-        maxlength: [30, "pas plus de 30 caractères"],
+        minlength: [5],
+        maxlength: [30],
         validate: {
             validator: function(value){
                 return /^[^@&"<>!_$*€£`+=\/';?#-]+$/.test(value);
@@ -63,4 +61,3 @@ const sauceSchema = mongoose.Schema({
 
 
 module.exports = mongoose.model('Sauce', sauceSchema);
-module.exports = router

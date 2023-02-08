@@ -1,6 +1,4 @@
-const express = require('express');
 const multer = require('multer');
-const router = express.Router();
 
 const MIME_TYPES = {
   'image/jpg': 'jpg',
@@ -28,4 +26,3 @@ module.exports = multer({
     }
 }).single('image');
 
-module.exports = router

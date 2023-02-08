@@ -14,10 +14,8 @@ Finally, the server starts listening on the specified port. The 'listening' even
 
 const http = require('http'); //utilisation de http pour transférer des données 
 const app = require('./app'); 
-const express = require('express');
-const router = express.Router();
 
-const normalizePort = val => { 
+NormalizePort = val => { 
   const port = parseInt(val, 10);
   
   if (isNaN(port)) {
@@ -29,9 +27,10 @@ const normalizePort = val => {
   return false;
 };
 
+const port = normalizePort(process.env.PORT || '3000');
+app.listen(port, () => console.log(`Server listening on port ${port}...`));
+app.set ('port', port);
 
-const port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
 
 const errorHandler = error => { 
   if (error.syscall !== 'listen') {
@@ -61,5 +60,5 @@ server.on('listening', () => {
   console.log('Listening on ' + bind);
 });
 
-server.listen(port); 
+server.listen(port);
 

@@ -14,10 +14,8 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt'); 
 const jsonwebtoken = require('jsonwebtoken'); 
 const maskData = require('maskdata'); 
-const express = require('express');
-const router = express.Router();
 const passwordValidator = require('password-validator');
-
+const userControllers = require('../controllers/user');
 
 let schema = new passwordValidator();
 schema
@@ -38,28 +36,23 @@ module.exports= (password) => {
 
 const validatePassword = require('./validatePassword');
 
-const userControllers = {
-signup : (req, res) => {
-    if(!validatePassword(req.body.password)) {
-        throw {error:'le mot de passe doit contenir au moins 8 caractères dont 1chiffre, 1 lettre majuscule et 1 minuscule'}
-    }else {
-        bcrypt.hash(req.body.password, 10) 
-            .then(hash => {
-                const user = new User({ 
-                    email: maskData.maskEmail2(req.body.email),
-                    password: hash
-                });
-                
-                user.save()
-                    .then(() => res.status(201).json({ message: 'Nouvel utilisateur créé !' }))
-                    .catch(error => res.status(400).json({ error }));
-            })
-            .catch(error => res.status(500).json({ error }));
-        }
+exports.signup = (req, res, next) => {
+    bcrypt .hash(req.body.password, 10)
+        .then(hash => {
+            const user = new User({
+                email: maskData.maskEmail2(req.body.email),
+                password: hash
+            });
+            user.save()
+                .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
+                .catch(error => res.status(400).json({ error }));
+        })
+        .catch(error => res.status(500).json({ error }));
 },
 
 
-login : (req, res) => {
+
+exports.login = (req, res, next) => {
     User.findOne({ email: maskData.maskEmail2(req.body.email)}) 
         .then(user => {
             if (!user) {
@@ -91,5 +84,5 @@ login : (req, res) => {
         .catch(error => res.status(500).json({ error }));
 },
 
-};
+
 module.exports = userControllers;
