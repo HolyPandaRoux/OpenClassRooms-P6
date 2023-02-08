@@ -1,3 +1,17 @@
+/* This is a Node.js script that creates an HTTP server. The server listens on a port and uses the Express application in the ./app module as the request handler. The port number to listen on is either specified in the PORT environment variable, or if it's not set, the default is 3000.
+
+The normalizePort function takes a value and returns a port number if the input is a valid number, or the input itself if it's not a number.
+
+The error handler function, errorHandler, handles different error codes that could occur when the server starts listening, such as 'EACCES' (permission denied) or 'EADDRINUSE' (address already in use). In those cases, the server will log an error message and terminate.
+
+Finally, the server starts listening on the specified port. The 'listening' event is logged to the console when the server is ready to receive incoming requests.
+
+*/
+
+
+
+
+
 const http = require('http'); //utilisation de http pour transférer des données 
 const app = require('./app'); 
 const express = require('express');
@@ -49,4 +63,3 @@ server.on('listening', () => {
 
 server.listen(port); 
 
-module.exports = router

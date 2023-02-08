@@ -1,10 +1,22 @@
+/** This section exports an object with three methods: signup, login, and an anonymous function for password validation.
+
+signup method first calls the validatePassword method and if the password is invalid, it throws an error. If the password is valid, it hashes the password using bcrypt and saves a new user to the database with masked email and hashed password.
+
+login method first finds a user in the database with the given email, validates it and then compares the given password with the hashed password stored in the database. If the passwords match, it creates a JSON web token with the user's _id and returns it to the client.
+
+The password validation method exports an anonymous function that creates a password schema using the password-validator library and returns the result of calling validate on the schema with the given password.
+
+**/
+
+
+
 const User = require('../models/User');
 const bcrypt = require('bcrypt'); 
 const jsonwebtoken = require('jsonwebtoken'); 
 const maskData = require('maskdata'); 
-const passwordValidator = require('password-validator');
 const express = require('express');
 const router = express.Router();
+const passwordValidator = require('password-validator');
 
 
 let schema = new passwordValidator();
@@ -14,15 +26,21 @@ schema
 .has().uppercase() 
 .has().lowercase() 
 .has().digits(1) 
-.has().not().spaces()                         
+.has().not().spaces()     
+
+module.exports= (password) => {
+    return schema.validate(password);
+};
 //.is().not().oneOf(['Passw0rd', 'Password123']); 
 // this list of forbidden passwords is not necessary because the password is hashed
 // however it is a good practice to add it , the password list will need to be researched and updated regularly
 
 
+const validatePassword = require('./validatePassword');
 
-exports.signup = (req, res, next) => {
-    if(!schema.validate(req.body.password)) {
+const userControllers = {
+signup : (req, res) => {
+    if(!validatePassword(req.body.password)) {
         throw {error:'le mot de passe doit contenir au moins 8 caractères dont 1chiffre, 1 lettre majuscule et 1 minuscule'}
     }else {
         bcrypt.hash(req.body.password, 10) 
@@ -38,10 +56,10 @@ exports.signup = (req, res, next) => {
             })
             .catch(error => res.status(500).json({ error }));
         }
-};
+},
 
 
-exports.login = (req, res, next) => {
+login : (req, res) => {
     User.findOne({ email: maskData.maskEmail2(req.body.email)}) 
         .then(user => {
             if (!user) {
@@ -71,7 +89,7 @@ exports.login = (req, res, next) => {
                 .catch(error => res.status(500).json({ error }));
         })
         .catch(error => res.status(500).json({ error }));
+},
+
 };
-
-
-module.exports = router
+module.exports = userControllers;
