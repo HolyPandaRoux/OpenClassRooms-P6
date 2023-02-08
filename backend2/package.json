@@ -12,6 +12,7 @@
   "dependencies": {
     "angular": "^1.8.3",
     "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
     "ddos": "^0.2.1",
     "ddos-express": "^0.1.7",

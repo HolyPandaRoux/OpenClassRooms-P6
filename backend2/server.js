@@ -14,6 +14,8 @@ Finally, the server starts listening on the specified port. The 'listening' even
 
 const http = require('http'); //utilisation de http pour transférer des données 
 const app = require('./app'); 
+var cors = require('cors');
+
 
 NormalizePort = val => { 
   const port = parseInt(val, 10);
@@ -26,10 +28,12 @@ NormalizePort = val => {
   }
   return false;
 };
+app.use(cors())
 
 const port = normalizePort(process.env.PORT || '3000');
 app.listen(port, () => console.log(`Server listening on port ${port}...`));
 app.set ('port', port);
+
 
 
 const errorHandler = error => { 
