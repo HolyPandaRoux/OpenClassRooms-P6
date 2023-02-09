@@ -25,6 +25,33 @@ const path          = require('path');
 const sanitize      = require('express-mongo-sanitize');
 const helmet        = require('helmet'); 
 const rateLimit     = require('express-rate-limit'); 
+var cors           = require('cors');
+
+app.use(cors());
+app.options ('*', cors(corsOptions));
+app.del    ('*', cors(corsOptions));
+app.head   ('*', cors(corsOptions));
+app.get    ('*', cors(corsOptions));
+app.post   ('*', cors(corsOptions));
+app.put    ('*', cors(corsOptions));
+app.patch  ('*', cors(corsOptions));
+app.trace  ('*', cors(corsOptions));
+app.connect('*', cors(corsOptions));
+
+var corsOptions = {
+  origin: function(origin, callback){
+    db.loadOrigins(function(err, origins) {
+      if (err) { return callback(err, false); }
+      if(origins.indexOf(origin) === -1){
+        var msg = 'The CORS policy for this site does not ' +
+                  'allow access from the specified Origin.';
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    });
+  }
+};
+
 
 mongoose.connect (process.env.DB_CONNECT, {
   useNewUrlParser: true,
@@ -36,14 +63,6 @@ mongoose.connect (process.env.DB_CONNECT, {
 
 require('dotenv').config({path:'.env'}); 
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content, Accept, Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Methods","GET, POST, PUT, DELETE, PATCH, OPTIONS");
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
-  res.preflightContinue = true;
-  next();
-});
 
 const sauceRoutes = require('./routes/sauce'); 
 const userRoutes  = require('./routes/user');
