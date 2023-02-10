@@ -1,25 +1,9 @@
-/* 
-This code exports functions for managing sauces in a database. The functions are:
-
-createSauce: Creates a new sauce by parsing the request body and storing the information in a new Sauce model instance.
-
-modifySauce: Updates an existing sauce based on the request body and the sauce's ID. If a file is attached to the request, the old image will be deleted and the new image's path will be stored in the database.
-
-deleteSauce: Deletes a sauce by its ID. The corresponding image is also deleted.
-
-getOneSauce: Retrieves a single sauce by its ID.
-
-getAllSauces: Retrieves all sauces in the database.
-
-likeSauce: Allows a user to like or dislike a sauce, or to change their vote. The user's ID and the vote (1 for like, -1 for dislike, 0 for removing the vote) are passed in the request body.
-
-*/
 
 
 
 const Sauce = require('../models/Sauce');
 const firesystem = require('fs');
-
+const fse = require('fs-extra');
 exports.createSauce  = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce); 
     delete sauceObject._id;
