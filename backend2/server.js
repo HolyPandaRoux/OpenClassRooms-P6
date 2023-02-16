@@ -2,8 +2,22 @@ const http = require('http');
 const app = require('./app'); 
 const cors = require('cors');
 const app = express();
+const router = express.Router();
+
 
 app.use(cors());
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+    return res.status(200).json({});
+  }
+  next();
+});
+app.use('/api', router);
+
 
 const normalizePort = (val) => {
   const port = parseInt(val, 10);
@@ -51,3 +65,4 @@ server.on('listening', () => {
 server.listen(port, () => {
   console.log(`Server listening on port ${port}...`);
 });
+module.exports = router;

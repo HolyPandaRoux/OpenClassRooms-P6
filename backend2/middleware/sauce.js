@@ -3,7 +3,6 @@
 
 const Sauce = require('../models/Sauce');
 const firesystem = require('fs');
-const fse = require('fs-extra');
 exports.createSauce  = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce); 
     delete sauceObject._id;
