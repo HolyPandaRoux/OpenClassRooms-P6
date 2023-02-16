@@ -3,10 +3,27 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const User = require('../models/User');
 
-router.post('/signup', (req, res) => {
+// Middleware to validate and sanitize the user input
+const validateUserInput = (req, res, next) => {
+    // Check if email and password are present in the request body
+    if (!req.body.email || !req.body.password) {
+        return res.status(400).json({
+            message: 'Email and password are required'
+        });
+    }
+
+    // Sanitize email and password inputs
+    req.body.email = req.sanitize(req.body.email).trim();
+    req.body.password = req.sanitize(req.body.password).trim();
+
+    next();
+};
+
+router.post('/signup', validateUserInput, (req, res) => {
     User.find({ email: req.body.email })
         .exec()
         .then(user => {
@@ -44,7 +61,7 @@ router.post('/signup', (req, res) => {
         });
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', validateUserInput, (req, res) => {
     User.find({ email: req.body.email })
         .exec()
         .then(user => {

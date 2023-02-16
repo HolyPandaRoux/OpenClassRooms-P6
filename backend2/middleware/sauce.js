@@ -1,96 +1,112 @@
-
-
-
 const Sauce = require('../models/Sauce');
-const firesystem = require('fs');
-exports.createSauce  = (req, res, next) => {
-    const sauceObject = JSON.parse(req.body.sauce); 
-    delete sauceObject._id;
-    const sauce = new Sauce({
-        ...sauceObject, 
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-    });
-    sauce.save()
-        .then(() => { res.status(201).json({ message: 'sauce créee!' }) })
-        .catch((error) => { res.status(400).json({ error: error }) });
+const fs = require('fs');
+
+exports.createSauce  = async (req, res, next) => {
+    try {
+        const sauceObject = JSON.parse(req.body.sauce);
+        delete sauceObject._id;
+        const sauce = new Sauce({
+            ...sauceObject,
+            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+        });
+        await sauce.save();
+        res.status(201).json({ message: 'Sauce créée!' });
+    } catch (error) {
+        res.status(400).json({ error });
+    }
 };
 
-exports.modifySauce  = (req, res, next) => {
-    if(req.file) {
-        Sauce.findOne({ _id: req.params.id })
-        .then(sauce => {
-            const filename = sauce.imageUrl.split('/images/')[1];
-            firesystem.unlink(`images/${filename}`, (error => {
-                if(error) 
-                    {console.log(error)}
-                else {
-                    console.log("image effacée");
-                }
-            })) 
-        })
-    };
-    const sauceObject = req.file ?
-        {   
-            ...JSON.parse(req.body.sauce),
-            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        } : { ...req.body };
-    Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, id: req.params.id }) 
-        .then(() => res.status(200).json({ message: 'sauce modifiée !' }))
-        .catch(error => res.status(400).json({ error }));
-};
-
-exports.deleteSauce  = (req, res, next) => {
-    Sauce.findOne({ _id: req.params.id }) 
-        .then(sauce => {
-            const filename = sauce.imageUrl.split('/images/')[1];
-            firesystem.unlink(`images/${filename}`, () => {
-                Sauce.deleteOne({ _id: req.params.id })
-                    .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
-                    .catch(error => res.status(400).json({ error }));
-            });
-        })
-        .catch(error => res.status(500).json({ error }));
-};
-
-exports.getOneSauce  = (req, res, next) => {
-    Sauce.findOne({ _id: req.params.id })
-        .then(sauce => res.status(200).json(sauce))
-        .catch(error => res.status(404).json({ error }));
-};
-
-exports.getAllSauces = (req, res, next) => {  
-    Sauce.find()
-        .then(sauce => res.status(200).json(sauce))
-        .catch(error => res.status(400).json({ error }));
-};
-
-exports.likeSauce    = (req, res, next) => {
-    Sauce.findOne({ _id: req.params.id }) 
-        .then(sauce => {
-            switch (req.body.like) {
-                case 1: 
-                    sauce.likes += 1;
-                    sauce.usersLiked.push(req.body.userId);
-                    break;
-                case -1:
-                    sauce.dislikes += 1;
-                    sauce.usersDisliked.push(req.body.userId);
-                    break;
-                case 0: 
-                    if (sauce.usersLiked.some(userId => userId == req.body.userId)) {
-                        sauce.likes -= 1;
-                        sauce.usersLiked = sauce.usersLiked.filter(userId => userId != req.body.userId); 
-                    } else { 
-                        sauce.dislikes -= 1;
-                        sauce.usersDisliked = sauce.usersDisliked.filter(userId => userId != req.body.userId);
-                    }
-                    break;
-                default: 
-                    console.log('erreur dans les likes/dislikes');
+exports.modifySauce  = async (req, res, next) => {
+    try {
+        const sauce = await Sauce.findOne({ _id: req.params.id });
+        if (req.file) {
+            deleteImage(sauce.imageUrl);
+        }
+        const sauceObject = req.file
+            ? {
+                ...JSON.parse(req.body.sauce),
+                imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
             }
-            sauce.save() 
-                .then(() => res.status(200).json())
-                .catch(error => res.status(400).json({ error }));
-        })
-}
+            : { ...req.body };
+        await Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, id: req.params.id });
+        res.status(200).json({ message: 'Sauce modifiée!' });
+    } catch (error) {
+        res.status(400).json({ error });
+    }
+};
 
+exports.deleteSauce  = async (req, res, next) => {
+    try {
+        const sauce = await Sauce.findOne({ _id: req.params.id });
+        deleteImage(sauce.imageUrl);
+        await Sauce.deleteOne({ _id: req.params.id });
+        res.status(200).json({ message: 'Sauce supprimée!' });
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+};
+
+exports.getOneSauce  = async (req, res, next) => {
+    try {
+        const sauce = await Sauce.findOne({ _id: req.params.id });
+        res.status(200).json(sauce);
+    } catch (error) {
+        res.status(404).json({ error });
+    }
+};
+
+exports.getAllSauces = async (req, res, next) => {
+    try {
+        const sauces = await Sauce.find();
+        res.status(200).json(sauces);
+    } catch (error) {
+        res.status(400).json({ error });
+    }
+};
+
+exports.likeSauce    = async (req, res, next) => {
+    try {
+        const sauce = await Sauce.findById(req.params.id);
+        if (!sauce) {
+            return res.status(404).json({ error: 'Sauce not found' });
+        }
+
+        const userId = req.body.userId;
+        const like = req.body.like;
+
+        // User already liked the sauce
+        if (sauce.usersLiked.includes(userId)) {
+            if (like === 1) {
+                return res.status(400).json({ error: 'User already liked the sauce' });
+            }
+            sauce.likes -= 1;
+            sauce.usersLiked = sauce.usersLiked.filter((id) => id !== userId);
+        }
+
+        // User already disliked the sauce
+        if (sauce.usersDisliked.includes(userId)) {
+            if (like === -1) {
+                return res.status(400).json({ error: 'User already disliked the sauce' });
+            }
+            sauce.dislikes -= 1;
+            sauce.usersDisliked = sauce.usersDisliked.filter((id) => id !== userId);
+        }
+
+        // User liked the sauce
+        if (like === 1) {
+            sauce.likes += 1;
+            sauce.usersLiked.push(userId);
+        }
+
+        // User disliked the sauce
+        if (like === -1) {
+            sauce.dislikes += 1;
+            sauce.usersDisliked.push(userId);
+        }
+
+        await sauce.save();
+        res.status(200).json(sauce);
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+};
