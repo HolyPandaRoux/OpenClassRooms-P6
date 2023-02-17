@@ -1,19 +1,26 @@
-require('dotenv').config({ path: '.env' });
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
+const router = express.Router();
 const path = require('path');
 const sanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const cors = require('cors');
 
-mongoose
-  .connect(process.env.DB_CONNECT, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-  .then(() => console.log('Connection to MongoDB established'))
-  .catch(() => console.log('Access denied'));
+app.use(cors());
+require('dotenv').config();
+
+const { MONGO_USER, MONGO_PASSWORD, MONGO_IP, MONGO_DB } = process.env;
+const MONGO_URI = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}/${MONGO_DB}?retryWrites=true&w=majority`;
+
+mongoose.connect(MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => console.log('Connected to MongoDB...'))
+  .catch(err => console.error('Could not connect to MongoDB...', err));
+
 
 const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
