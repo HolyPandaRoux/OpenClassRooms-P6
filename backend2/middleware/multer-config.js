@@ -24,3 +24,4 @@ module.exports = multer({
         fileSize: MAX_FILE_SIZE_MB * 1024 * 1024,
     },
 }).single('image');
+

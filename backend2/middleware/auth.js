@@ -1,23 +1,24 @@
 const jsonwebtoken = require('jsonwebtoken');
 
 const auth = (req, res, next) => {
-  try {
-    if (!req.headers.authorization || typeof req.headers.authorization !== 'string') {
-      return res.status(401).json({ error: 'Unauthorized request' });
-    }
+  if (!req.headers.authorization || typeof req.headers.authorization !== 'string') {
+    return res.status(401).json({ error: 'Unauthorized request' });
+  }
 
+  let userId;
+  try {
     const token = req.headers.authorization.split(' ')[1];
     const decodedToken = jsonwebtoken.verify(token, process.env.token);
-    const userId = decodedToken.userId;
-
-    if (req.body.userId && req.body.userId !== userId) {
-      throw new Error('Invalid User ID');
-    } else {
-      next();
-    }
+    userId = decodedToken.userId;
   } catch (error) {
-    res.status(401).json({ error: 'Unauthorized request' });
+    return res.status(401).json({ error: 'Unauthorized request' });
   }
+
+  if (req.body.userId && req.body.userId !== userId) {
+    return res.status(401).json({ error: 'Invalid User ID' });
+  }
+
+  next();
 };
 
-module.exports = auth;
+module.exports = auth; 

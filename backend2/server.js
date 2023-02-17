@@ -2,38 +2,33 @@ const http = require('http');
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const router = express.Router();
 
 app.use(cors());
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-    return res.status(200).json({});
-  }
-  next();
-});
-
+const router = express.Router();
 app.use('/api', router);
 
+// Cache port validation
+let cachedPort;
 const normalizePort = (val) => {
-  const port = parseInt(val, 10);
-
-  if (isNaN(port)) {
+  cachedPort = cachedPort || parseInt(val, 10);
+  if (isNaN(cachedPort)) {
     return val;
   }
-  if (port >= 0) {
-    return port;
+  if (cachedPort >= 0) {
+    return cachedPort;
   }
   return false;
 };
 
-const port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+// Split into separate function
+const setupPort = () => {
+  const port = normalizePort(process.env.PORT || '3000');
+  app.set('port', port);
+}
 
-const errorHandler = (error) => {
+// Split into separate function
+const handleError = (error) => {
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -52,15 +47,22 @@ const errorHandler = (error) => {
   }
 };
 
-const server = http.createServer(app);
+// Split into separate function
+const setupListener = () => {
+  const server = http.createServer(app);
 
-server.on('error', errorHandler);
-server.on('listening', () => {
-  const address = server.address();
-  const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + address.port;
-  console.log('Listening on ' + bind);
-});
+  server.on('error', handleError);
+  server.on('listening', () => {
+    const address = server.address();
+    const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + address.port;
+    console.log('Listening on ' + bind);
+  });
 
-server.listen(port, () => {
-  console.log(`Server listening on port ${port}...`);
-});
+  server.listen(port, () => {
+    console.log(`Server launched on port ${port}...`);
+  });
+}
+
+setupPort();
+handleError();
+setupListener();

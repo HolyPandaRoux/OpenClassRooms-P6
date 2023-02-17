@@ -1,7 +1,7 @@
 const Sauce = require('../models/Sauce');
-const fs = require('fs');
+const fs    = require('fs');
 
-exports.getOneSauce = async (req, res, next) => {
+exports.getOneSauce    = async (req, res, next) => {
     try {
         const sauce = await Sauce.findOne({ _id: req.params.id });
         res.status(200).json(sauce);
@@ -10,7 +10,7 @@ exports.getOneSauce = async (req, res, next) => {
     }
 };
 
-exports.getAllSauces = async (req, res, next) => {
+exports.getAllSauces   = async (req, res, next) => {
     try {
         const sauce = await Sauce.find();
         res.status(200).json(sauce);
@@ -19,7 +19,7 @@ exports.getAllSauces = async (req, res, next) => {
     }
 };
 
-exports.createSauce = async (req, res, next) => {
+exports.createSauce    = async (req, res, next) => {
     try {
         const sauceObject = JSON.parse(req.body.sauce);
         delete sauceObject._id;
@@ -34,7 +34,7 @@ exports.createSauce = async (req, res, next) => {
     }
 };
 
-exports.modifySauce = async (req, res, next) => {
+exports.modifySauce    = async (req, res, next) => {
     try {
         if (req.file) {
             const sauce = await Sauce.findOne({ _id: req.params.id });
@@ -60,7 +60,7 @@ exports.modifySauce = async (req, res, next) => {
     }
 };
 
-exports.deleteSauce = async (req, res, next) => {
+exports.deleteSauce    = async (req, res, next) => {
     try {
         const sauce = await Sauce.findOne({ _id: req.params.id });
         const filename = sauce.imageUrl.split('/images/')[1];
@@ -77,3 +77,34 @@ exports.deleteSauce = async (req, res, next) => {
         res.status(500).json({ error });
     }
 };
+
+exports.likeSauce      = async (req, res, next) => {
+    try {
+        const sauce = await Sauce.findOne({ _id: req.params.id });
+        const like = req.body.like;
+        const userId = req.body.userId;
+        if (like === 1) {
+            if (!sauce.usersLiked.includes(userId)) {
+                sauce.usersLiked.push(userId);
+                sauce.likes++;
+            }
+        } else if (like === -1) {
+            if (!sauce.usersDisliked.includes(userId)) {
+                sauce.usersDisliked.push(userId);
+                sauce.dislikes++;
+            }
+        } else if (like === 0) {
+            if (sauce.usersLiked.includes(userId)) {
+                sauce.usersLiked.splice(sauce.usersLiked.indexOf(userId), 1);
+                sauce.likes--;
+            } else if (sauce.usersDisliked.includes(userId)) {
+                sauce.usersDisliked.splice(sauce.usersDisliked.indexOf(userId), 1);
+                sauce.dislikes--;
+            }
+        }
+        await sauce.save();
+        res.status(200).json({ message: 'Sauce liked!' });
+    } catch (error) {
+        res.status(400).json({ error });
+    }
+}
