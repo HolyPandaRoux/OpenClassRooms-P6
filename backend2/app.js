@@ -10,10 +10,12 @@ const rateLimit = require('express-rate-limit');
 const cors      = require('cors');
 const limiter   = rateLimit({ windowMs: 60 * 1000, max: 3 });
 const router = express.Router();
+const dotenv = require('dotenv');
+
 app.use('/api', router);
 app.use(cors());
 
-require('dotenv').config();
+dotenv.config();
 
 const { MONGO_USER, MONGO_PASSWORD, MONGO_IP, MONGO_DB } = process.env;
 const MONGO_URI = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}/${MONGO_DB}?retryWrites=true&w=majority`;

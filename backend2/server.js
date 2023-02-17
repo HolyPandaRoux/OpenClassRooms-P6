@@ -8,7 +8,6 @@ app.use(cors());
 const router = express.Router();
 app.use('/api', router);
 
-// Cache port validation
 let cachedPort;
 const normalizePort = (val) => {
   cachedPort = cachedPort || parseInt(val, 10);
@@ -21,17 +20,16 @@ const normalizePort = (val) => {
   return false;
 };
 
-// Split into separate function
 const setupPort = () => {
   const port = normalizePort(process.env.PORT || '3000');
   app.set('port', port);
-}
+};
 
-// Split into separate function
-const handleError = (error) => {
+const handleError = (error, port) => {
   if (error.syscall !== 'listen') {
     throw error;
   }
+
   const bind = typeof port === 'string' ? 'pipe ' + port : 'port ' + port;
   switch (error.code) {
     case 'EACCES':
@@ -47,22 +45,25 @@ const handleError = (error) => {
   }
 };
 
-// Split into separate function
+setupPort();
+handleError();
+
 const setupListener = () => {
   const server = http.createServer(app);
 
-  server.on('error', handleError);
+  server.on('error', (error) => {
+    handleError(error, app.get('port'));
+  });
+
   server.on('listening', () => {
     const address = server.address();
     const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + address.port;
     console.log('Listening on ' + bind);
   });
 
-  server.listen(port, () => {
-    console.log(`Server launched on port ${port}...`);
+  server.listen(app.get('port'), () => {
+    console.log(`Server launched on port ${app.get('port')}...`);
   });
-}
+};
 
-setupPort();
-handleError();
 setupListener();
