@@ -1,14 +1,25 @@
+/* It imports the http module to create a HTTP server.
+It imports the app module, which is an instance of an Express application.
+It imports the cors middleware and applies it to the Express app.
+It defines a function normalizePort that tries to parse a string into a number.
+It defines a function setupPort that sets the app's port based on the environment variable process.env.PORT.
+It defines a function handleError that handles any errors that occur when trying to start the server.
+It calls setupPort to set up the port.
+It defines a function setupListener that creates a HTTP server using the Express app, sets up event listeners for errors and listening events, and starts the server.
+It calls setupListener to start the server.
+*/
+
+
+
+
 const http = require('http');
-const express = require('express');
-const app = express();
+const app = require ('./app');
 const cors = require('cors');
 
 app.use(cors());
 
-const router = express.Router();
-app.use('/api', router);
-
 let cachedPort;
+
 const normalizePort = (val) => {
   cachedPort = cachedPort || parseInt(val, 10);
   if (isNaN(cachedPort)) {
@@ -26,27 +37,19 @@ const setupPort = () => {
 };
 
 const handleError = (error, port) => {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-
-  const bind = typeof port === 'string' ? 'pipe ' + port : 'port ' + port;
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges.');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use.');
-      process.exit(1);
-      break;
-    default:
-      throw error;
+  if (error.code === 'EACCES') {
+    console.error(`Port ${port} requires elevated privileges.`);
+    process.exit(1);
+  } else if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${port} is already in use.`);
+    process.exit(1);
+  } else {
+    console.error(error);
+    process.exit(1);
   }
 };
 
 setupPort();
-handleError();
 
 const setupListener = () => {
   const server = http.createServer(app);
@@ -62,7 +65,7 @@ const setupListener = () => {
   });
 
   server.listen(app.get('port'), () => {
-    console.log(`Server launched on port ${app.get('port')}...`);
+    console.log(`Server started on port ${app.get('port')}...`);
   });
 };
 

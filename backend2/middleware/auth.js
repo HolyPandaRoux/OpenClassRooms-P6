@@ -8,7 +8,7 @@ const auth = (req, res, next) => {
   let userId;
   try {
     const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jsonwebtoken.verify(token, process.env.token);
+    const decodedToken = jsonwebtoken.verify(token, process.env.TOKEN);
     userId = decodedToken.userId;
   } catch (error) {
     return res.status(401).json({ error: 'Unauthorized request' });
