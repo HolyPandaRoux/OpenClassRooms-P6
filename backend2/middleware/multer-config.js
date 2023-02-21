@@ -1,4 +1,9 @@
+//adding the current timestamp to the filename, which may cause issues if two files with the same name are uploaded at the same time
+//UUIDv4  generate a unique filename:
+
 const multer = require('multer');
+const { v4: uuidv4 } = require('uuid');
+const maxPicSize = 1024 * 1024 * 5; // 5MB
 
 const MIME_TYPES = {
     'image/jpg': 'jpg',
@@ -6,22 +11,20 @@ const MIME_TYPES = {
     'image/png': 'png'
 };
 
-const MAX_FILE_SIZE_MB = 4;
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
         callback(null, 'images');
     },
     filename: (req, file, callback) => {
-        const name = file.originalname.split(' ').join('_');
         const extension = MIME_TYPES[file.mimetype];
-        callback(null, name + Date.now() + '.' + extension);
+        const filename = `${uuidv4()}.${extension}`;
+        callback(null, filename);
     },
 });
 
 module.exports = multer({
-    storage,
+    storage : storage,
     limits: {
-        fileSize: MAX_FILE_SIZE_MB * 1024 * 1024,
+        fileSize: maxPicSize,
     },
 }).single('image');
-

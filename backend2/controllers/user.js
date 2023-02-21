@@ -1,7 +1,7 @@
-const User              = require('../models/User');
-const bcrypt            = require('bcrypt');
-const jsonwebtoken      = require('jsonwebtoken');
-const maskData          = require('maskdata');
+const User = require('../models/User');
+const bcrypt = require('bcrypt');
+const jsonwebtoken = require('jsonwebtoken');
+const maskData = require('maskdata');
 const passwordValidator = require('password-validator');
 
 let schema = new passwordValidator();
@@ -23,7 +23,7 @@ exports.signup = async (req, res, next) => {
             return res.status(400).json({ error: 'Renseignez votre adresse mail et votre mot de passe' });
         }
 
-        if (!validatePassword(req.body.password)) {
+        if (!module.exports.validatePassword(req.body.password)) {
             return res.status(400).json({ error: 'Le mot de passe doit contenir 8 caractères, inclure une majuscule et un chiffre' });
         }
 

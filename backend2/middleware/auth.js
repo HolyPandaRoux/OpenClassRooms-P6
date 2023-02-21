@@ -1,24 +1,22 @@
+//securité pour verifier le TOKEN
 const jsonwebtoken = require('jsonwebtoken');
+const dotenv = require('dotenv');
 
-const auth = (req, res, next) => {
-  if (!req.headers.authorization || typeof req.headers.authorization !== 'string') {
-    return res.status(401).json({ error: 'Unauthorized request' });
-  }
-
-  let userId;
-  try {
-    const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jsonwebtoken.verify(token, process.env.TOKEN);
-    userId = decodedToken.userId;
-  } catch (error) {
-    return res.status(401).json({ error: 'Unauthorized request' });
-  }
-
-  if (req.body.userId && req.body.userId !== userId) {
-    return res.status(401).json({ error: 'Invalid User ID' });
-  }
-
-  next();
+dotenv.config();
+module.exports = (req, res, next) => {
+    try {   
+        const token = req.headers.authorization.split(' ')[1]; //on trouve le numero du token par son emplacement 
+        const decodedToken = jsonwebtoken.verify(token, `${process.env.TOP_SECRET}`);
+        const userId = decodedToken.userId;//on en fait un objet JS pour récupérer l'Id qui est dedans
+    
+        if (req.body.userId && req.body.userId !== userId) {  //on verifie userId avec celui de la requete
+          throw "Identitée de l'utilisateur non enregistrée";
+        } else {
+          next();
+        }
+    } catch {
+        res.status(401).json({
+            error: new Error('requête non authentifiée!')
+        });
+    }
 };
-
-module.exports = auth; 

@@ -55,17 +55,11 @@ const sauceSchema = mongoose.Schema(
                 message: "N'entrez que des lettres et des chiffres, svp"
             }
         },
-        heat: {
-            type: Number,
-            enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        },
-        imageUrl: {
-            type: String,
-            trim: true
-        },
-        likes: { type: Number, default: 0 },
-        dislikes: { type: Number, default: 0 },
-        usersLiked: { type: Array, default: [] },
+        heat         : {type: Number,enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+        imageUrl     : {type: String},
+        likes        : { type: Number, default: 0 },
+        dislikes     : { type: Number, default: 0 },
+        usersLiked   : { type: Array, default: [] },
         usersDisliked: { type: Array, default: [] },
     },
     {
