@@ -30,12 +30,17 @@ mongoose
 // DDoS protection - limit the number of requests from a single IP
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 10, // limit each IP to 10 requests per windowMs
+  max: 100, // limit each IP to 100 requests per windowMs
   message: 'Too many requests from this IP, please try again later.'
 });
 
 app.use(helmet());
 app.use(cors());
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/images', express.static(path.join(__dirname, 'images')));

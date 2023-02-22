@@ -28,8 +28,10 @@ exports.createSauce    = async (req, res, next) => {
             imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
         });
         await sauce.save();
+        console.log('Sauce created!');
         res.status(201).json({ message: 'Sauce created!' });
     } catch (error) {
+        console.log(error);
         res.status(400).json({ error });
     }
 };
