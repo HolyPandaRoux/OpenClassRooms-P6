@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const sauceSchema = mongoose.Schema(
     {
@@ -12,6 +13,7 @@ const sauceSchema = mongoose.Schema(
             minlength: 5,
             maxlength: 30,
             trim: true,
+            unique: true,
             validate: {
                 validator: function (value) {
                     return /^[a-zA-Z0-9]+$/.test(value);
@@ -55,12 +57,29 @@ const sauceSchema = mongoose.Schema(
                 message: "N'entrez que des lettres et des chiffres, svp"
             }
         },
-        heat         : {type: Number,enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
-        imageUrl     : {type: String},
-        likes        : { type: Number, default: 0 },
-        dislikes     : { type: Number, default: 0 },
-        usersLiked   : { type: Array, default: [] },
-        usersDisliked: { type: Array, default: [] },
+        heat: {
+            type: Number,
+            enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        },
+        imageUrl: {
+            type: String
+        },
+        likes: {
+            type: Number,
+            default: 0
+        },
+        dislikes: {
+            type: Number,
+            default: 0
+        },
+        usersLiked: {
+            type: Array,
+            default: []
+        },
+        usersDisliked: {
+            type: Array,
+            default: []
+        }
     },
     {
         timestamps: true,
@@ -68,4 +87,5 @@ const sauceSchema = mongoose.Schema(
     }
 );
 
+sauceSchema.plugin(uniqueValidator, { message: 'Ce {PATH} est déjà utilisé.' });
 module.exports = mongoose.model('Sauce', sauceSchema);
