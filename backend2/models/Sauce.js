@@ -10,56 +10,57 @@ const sauceSchema = mongoose.Schema(
         name: {
             type: String,
             required: true,
-            minlength: 5,
-            maxlength: 30,
+            minlength: 3,
+            maxlength: 50,
             trim: true,
             unique: true,
             validate: {
                 validator: function (value) {
-                    return /^[a-zA-Z0-9]+$/.test(value);
+                    return /^[a-zA-Z0-9éèàêîôûçäëïöüŸ]+$/.test(value);
                 },
-                message: "N'entrez que des lettres et des chiffres, svp"
+                message: "N'entrez que des lettres, des chiffres et certains caractères spéciaux (éèàêîôûçäëïöüŸ), svp"
             }
         },
         manufacturer: {
             type: String,
-            minlength: 5,
+            minlength: 3,
             maxlength: 50,
             trim: true,
             validate: {
                 validator: function (value) {
-                    return /^[a-zA-Z0-9]+$/.test(value);
+                    return /^[a-zA-Z0-9éèàêîôûçäëïöüŸ\s\-']+$/i.test(value);
                 },
-                message: "N'entrez que des lettres et des chiffres, svp"
+                message: "N'entrez que des lettres, des chiffres et certains caractères spéciaux (éèàêîôûçäëïöüŸ), svp"
             }
         },
         description: {
             type: String,
-            minlength: 15,
-            maxlength: 100,
+            minlength: 10,
+            maxlength: 300,
             trim: true,
             validate: {
                 validator: function (value) {
-                    return /^[a-zA-Z0-9]+$/.test(value);
+                    return /^[a-zA-Z0-9éèàêîôûçäëïöüŸ\s\-'\(\),.:;!]+$/i.test(value);
                 },
-                message: "N'entrez que des lettres et des chiffres, svp"
+                message: "N'entrez que des lettres, des chiffres et certains caractères spéciaux (éèàêîôûçäëïöüŸ), svp"
             }
         },
         mainPepper: {
             type: String,
-            minlength: 5,
-            maxlength: 30,
+            minlength: 3,
+            maxlength: 50,
             trim: true,
             validate: {
                 validator: function (value) {
-                    return /^[a-zA-Z0-9]+$/.test(value);
+                    return /^[a-zA-Z0-9éèàêîôûçäëïöüŸ\s\-']+$/i.test(value);
                 },
-                message: "N'entrez que des lettres et des chiffres, svp"
+                message: "N'entrez que des lettres, des chiffres et certains caractères spéciaux (éèàêîôûçäëïöüŸ), svp"
             }
         },
         heat: {
             type: Number,
-            enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            min: 0,
+            max: 10
         },
         imageUrl: {
             type: String
@@ -73,11 +74,11 @@ const sauceSchema = mongoose.Schema(
             default: 0
         },
         usersLiked: {
-            type: Array,
+            type: [String],
             default: []
         },
         usersDisliked: {
-            type: Array,
+            type: [String],
             default: []
         }
     },
