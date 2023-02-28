@@ -12,13 +12,16 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+/* Getting the values from the .env file. */
 const { MONGO_USER, MONGO_PASSWORD, MONGO_IP } = process.env;
 console.log(`MONGO_USER: ${MONGO_USER}`);
 console.log(`MONGO_PASSWORD: ${MONGO_PASSWORD}`);
 console.log(`MONGO_IP: ${MONGO_IP}`);
 
+/* Creating a connection string to the MongoDB Atlas cluster. */
 const MONGO_URI = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}?retryWrites=true&w=majority`;
 
+/* Connecting to the MongoDB Atlas cluster. */
 mongoose
   .connect(MONGO_URI, {
     useNewUrlParser: true,
@@ -40,13 +43,18 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   next();
 });
+/* A security measure to prevent cross-site scripting attacks. */
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(express.json());
+/* Parsing the body of the request. */
 app.use(express.urlencoded({ extended: true }));
+/* Serving the images folder. */
 app.use('/images', express.static(path.join(__dirname, 'images')));
+/* A security measure to prevent cross-site scripting attacks. */
 app.use(sanitize());
 app.use(limiter);
 
+/* Telling the server to use the routes defined in the sauce.js and user.js files. */
 app.use('/api/sauces', sauce);
 app.use('/api/auth', user);
 

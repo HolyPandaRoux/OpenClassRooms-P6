@@ -1,7 +1,8 @@
 ## Ignore Visual Studio temporary files
 
 
-
+#exlusion dossier images sur git
+images/
 
 #Env files
 .env

@@ -1,7 +1,9 @@
 //securité pour verifier le TOKEN
 const jsonwebtoken = require('jsonwebtoken');
+/* A module that allows you to use environment variables in your application. */
 const dotenv = require('dotenv');
 
+/* A middleware that checks if the user is authenticated. */
 dotenv.config();
 module.exports = (req, res, next) => {
     try {   

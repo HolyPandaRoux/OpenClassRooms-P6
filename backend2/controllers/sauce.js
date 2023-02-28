@@ -1,8 +1,8 @@
 const Sauce = require('../models/Sauce');
-const fs = require('fs');
-const path = require('path');
+const fs    = require('fs');
+const path  = require('path');
 
-exports.getOneSauce = async (req, res, next) => {
+exports.getOneSauce  = async (req, res, next) => {
     try {
         const sauce = await Sauce.findOne({ _id: req.params.id });
         res.status(200).json(sauce);
@@ -20,7 +20,7 @@ exports.getAllSauces = async (req, res, next) => {
     }
 };
 
-exports.createSauce = async (req, res, next) => {
+exports.createSauce  = async (req, res, next) => {
     try {
         const sauceObject = JSON.parse(req.body.sauce);
         delete sauceObject._id;
@@ -37,7 +37,7 @@ exports.createSauce = async (req, res, next) => {
     }
 };
 
-exports.modifySauce = async (req, res, next) => {
+exports.modifySauce  = async (req, res, next) => {
     try {
         const sauce = await Sauce.findOne({ _id: req.params.id });
         if (req.file && sauce.imageUrl) {
@@ -50,12 +50,14 @@ exports.modifySauce = async (req, res, next) => {
                 }
             });
         }
+        console.log(req.file)
         const sauceObject = req.file
             ? {
                 ...JSON.parse(req.body.sauce),
                 imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
             }
             : { ...req.body };
+        console.log(sauceObject)
         await Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id });
         res.status(200).json({ message: 'Sauce modified!' });
     } catch (error) {
@@ -63,7 +65,7 @@ exports.modifySauce = async (req, res, next) => {
     }
 };
 
-exports.deleteSauce = async (req, res, next) => {
+exports.deleteSauce  = async (req, res, next) => {
     try {
         const sauce = await Sauce.findOne({ _id: req.params.id });
         if (sauce.imageUrl) {
@@ -101,7 +103,8 @@ exports.deleteSauce = async (req, res, next) => {
     }
 };
 
-        exports.likeSauce = async (req, res, next) => {
+/* The above code is a function that is used to like a sauce. */
+exports.likeSauce    = async (req, res, next) => {
             try {
                 const sauce = await Sauce.findOne({ _id: req.params.id });
                 const like = req.body.like;
@@ -130,4 +133,4 @@ exports.deleteSauce = async (req, res, next) => {
             } catch (error) {
                 res.status(400).json({ error });
             }
-        }
+}

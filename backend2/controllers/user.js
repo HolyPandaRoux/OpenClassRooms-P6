@@ -4,6 +4,7 @@ const jsonwebtoken = require('jsonwebtoken');
 const maskData = require('maskdata');
 const passwordValidator = require('password-validator');
 
+/* A password validator. */
 let schema = new passwordValidator();
 schema
     .is().min(8)
@@ -13,10 +14,12 @@ schema
     .has().digits(1)
     .has().not().spaces()
 
+/* A function that validates the password. */
 module.exports.validatePassword = (password) => {
     return schema.validate(password);
 };
 
+/* Creating a new user. */
 exports.signup = async (req, res, next) => {
     try {
         if (!req.body.email || !req.body.password) {
@@ -39,7 +42,7 @@ exports.signup = async (req, res, next) => {
     }
 };
 
-exports.login = async (req, res, next) => {
+exports.login  = async (req, res, next) => {
     try {
         if (!req.body.email || !req.body.password) {
             return res.status(400).json({ error: 'Renseignez votre adresse mail et votre mot de passe' });
