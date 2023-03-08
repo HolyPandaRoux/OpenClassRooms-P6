@@ -103,7 +103,6 @@ exports.deleteSauce  = async (req, res, next) => {
     }
 };
 
-/* The above code is a function that is used to like a sauce. */
 exports.likeSauce    = async (req, res, next) => {
             try {
                 const sauce = await Sauce.findOne({ _id: req.params.id });

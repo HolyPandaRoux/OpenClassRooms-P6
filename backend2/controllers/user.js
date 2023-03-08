@@ -4,7 +4,7 @@ const jsonwebtoken = require('jsonwebtoken');
 const maskData = require('maskdata');
 const passwordValidator = require('password-validator');
 
-/* A password validator. */
+/* password validator. */
 let schema = new passwordValidator();
 schema
     .is().min(8)
@@ -14,7 +14,7 @@ schema
     .has().digits(1)
     .has().not().spaces()
 
-/* A function that validates the password. */
+/* function that validates the password. */
 module.exports.validatePassword = (password) => {
     return schema.validate(password);
 };
